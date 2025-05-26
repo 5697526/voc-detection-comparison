@@ -36,6 +36,8 @@ conda activate mmdet
 pip install torch torchvision torchaudio
 pip install -U openmim
 mim install "mmcv<2.2.0" 
+# 克隆mmdetection仓库
+git clone https://github.com/open-mmlab/mmdetection.git
 cd mmdetection
 pip install -v -e .
 ```
@@ -43,18 +45,46 @@ pip install -v -e .
 #### 2.  数据集准备
 
 ```
+# 下载并解压VOC2007和VOC2012
+mkdir -p data/VOCdevkit
+cd data/VOCdevkit
 wget http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar
 wget http://host.robots.ox.ac.uk/pascal/VOC/voc2007/VOCtrainval_06-Nov-2007.tar
 wget http://host.robots.ox.ac.uk/pascal/VOC/voc2007/VOCtest_06-Nov-2007.tar
+
+tar -xvf VOCtrainval_06-Nov-2007.tar
+tar -xvf VOCtrainval_11-May-2012.tar
+tar -xvf VOCtest_06-Nov-2007.tar
 ```
 
 #### 3.  训练模型
-`
+使用以下命令训练 Mask R-CNN 模型：
+```
+python tools/train.py \
+  configs/mask-rcnn_voc.py \
+  --work-dir work_dirs/mask-rcnn-cuda \
+  --cfg-options device='cuda' 
+```
+使用以下命令训练 Sparse R-CNN 模型：
+```
+python tools/train.py \
+  configs/sparse-rcnn_voc.py \
+  --work-dir work_dirs/sparse-rcnn-cuda \
+  --cfg-options device='cuda'
+```
 
-`
 
-`
 
-`
+```
 
+```
+
+
+```
+
+```
+
+```
+
+```
 ### 五、模型权重下载
