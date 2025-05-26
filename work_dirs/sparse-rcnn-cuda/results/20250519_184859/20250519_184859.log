@@ -1,0 +1,843 @@
+2025/05/19 18:49:02 - mmengine - INFO - 
+------------------------------------------------------------
+System environment:
+    sys.platform: win32
+    Python: 3.8.20 (default, Oct  3 2024, 15:19:54) [MSC v.1929 64 bit (AMD64)]
+    CUDA available: False
+    MUSA available: False
+    numpy_random_seed: 1320448846
+    MSVC: 用于 x64 的 Microsoft (R) C/C++ 优化编译器 19.42.34435 版
+    GCC: n/a
+    PyTorch: 2.4.1+cpu
+    PyTorch compiling details: PyTorch built with:
+  - C++ Version: 201703
+  - MSVC 192930154
+  - Intel(R) oneAPI Math Kernel Library Version 2024.2.1-Product Build 20240722 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v3.4.2 (Git Hash 1137e04ec0b5251ca2b4400a4fd3c667ce843d67)
+  - OpenMP 2019
+  - LAPACK is enabled (usually provided by MKL)
+  - CPU capability usage: AVX512
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CXX_COMPILER=C:/actions-runner/_work/pytorch/pytorch/builder/windows/tmp_bin/sccache-cl.exe, CXX_FLAGS=/DWIN32 /D_WINDOWS /GR /EHsc /Zc:__cplusplus /bigobj /FS /utf-8 -DUSE_PTHREADPOOL -DNDEBUG -DUSE_KINETO -DLIBKINETO_NOCUPTI -DLIBKINETO_NOROCTRACER -DUSE_FBGEMM -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE /wd4624 /wd4068 /wd4067 /wd4267 /wd4661 /wd4717 /wd4244 /wd4804 /wd4273, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=2.4.1, USE_CUDA=0, USE_CUDNN=OFF, USE_CUSPARSELT=OFF, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_GLOO=ON, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=OFF, USE_NNPACK=OFF, USE_OPENMP=ON, USE_ROCM=OFF, USE_ROCM_KERNEL_ASSERT=OFF, 
+
+    TorchVision: 0.19.1+cpu
+    OpenCV: 4.11.0
+    MMEngine: 0.10.7
+
+Runtime environment:
+    cudnn_benchmark: False
+    mp_cfg: {'mp_start_method': 'fork', 'opencv_num_threads': 0}
+    dist_cfg: {'backend': 'nccl'}
+    seed: 1320448846
+    Distributed launcher: none
+    Distributed training: False
+    GPU number: 1
+------------------------------------------------------------
+
+2025/05/19 18:49:03 - mmengine - INFO - Config:
+auto_scale_lr = dict(base_batch_size=16, enable=False)
+backend_args = None
+data_root = 'data/VOCdevkit/'
+dataset_type = 'VOCDataset'
+default_hooks = dict(
+    checkpoint=dict(interval=1, type='CheckpointHook'),
+    logger=dict(interval=50, type='LoggerHook'),
+    param_scheduler=dict(type='ParamSchedulerHook'),
+    sampler_seed=dict(type='DistSamplerSeedHook'),
+    timer=dict(type='IterTimerHook'),
+    visualization=dict(type='DetVisualizationHook'))
+default_scope = 'mmdet'
+env_cfg = dict(
+    cudnn_benchmark=False,
+    dist_cfg=dict(backend='nccl'),
+    mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
+launcher = 'none'
+load_from = 'work_dirs/sparse-rcnn-cuda/epoch_6.pth'
+log_level = 'INFO'
+log_processor = dict(by_epoch=True, type='LogProcessor', window_size=50)
+model = dict(
+    backbone=dict(
+        depth=50,
+        frozen_stages=1,
+        init_cfg=dict(checkpoint='torchvision://resnet50', type='Pretrained'),
+        norm_cfg=dict(requires_grad=True, type='BN'),
+        norm_eval=True,
+        num_stages=4,
+        out_indices=(
+            0,
+            1,
+            2,
+            3,
+        ),
+        style='pytorch',
+        type='ResNet'),
+    data_preprocessor=dict(
+        bgr_to_rgb=True,
+        mean=[
+            123.675,
+            116.28,
+            103.53,
+        ],
+        pad_size_divisor=32,
+        std=[
+            58.395,
+            57.12,
+            57.375,
+        ],
+        type='DetDataPreprocessor'),
+    neck=dict(
+        add_extra_convs='on_input',
+        in_channels=[
+            256,
+            512,
+            1024,
+            2048,
+        ],
+        num_outs=4,
+        out_channels=256,
+        start_level=0,
+        type='FPN'),
+    roi_head=dict(
+        bbox_head=[
+            dict(
+                bbox_coder=dict(
+                    clip_border=False,
+                    target_means=[
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0,
+                    ],
+                    target_stds=[
+                        0.5,
+                        0.5,
+                        1.0,
+                        1.0,
+                    ],
+                    type='DeltaXYWHBBoxCoder'),
+                dropout=0.0,
+                dynamic_conv_cfg=dict(
+                    act_cfg=dict(inplace=True, type='ReLU'),
+                    feat_channels=64,
+                    in_channels=256,
+                    input_feat_shape=7,
+                    norm_cfg=dict(type='LN'),
+                    out_channels=256,
+                    type='DynamicConv'),
+                feedforward_channels=2048,
+                ffn_act_cfg=dict(inplace=True, type='ReLU'),
+                in_channels=256,
+                loss_bbox=dict(loss_weight=5.0, type='L1Loss'),
+                loss_cls=dict(
+                    alpha=0.25,
+                    gamma=2.0,
+                    loss_weight=2.0,
+                    type='FocalLoss',
+                    use_sigmoid=True),
+                loss_iou=dict(loss_weight=2.0, type='GIoULoss'),
+                num_classes=20,
+                num_cls_fcs=1,
+                num_ffn_fcs=2,
+                num_heads=8,
+                num_reg_fcs=3,
+                type='DIIHead'),
+            dict(
+                bbox_coder=dict(
+                    clip_border=False,
+                    target_means=[
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0,
+                    ],
+                    target_stds=[
+                        0.5,
+                        0.5,
+                        1.0,
+                        1.0,
+                    ],
+                    type='DeltaXYWHBBoxCoder'),
+                dropout=0.0,
+                dynamic_conv_cfg=dict(
+                    act_cfg=dict(inplace=True, type='ReLU'),
+                    feat_channels=64,
+                    in_channels=256,
+                    input_feat_shape=7,
+                    norm_cfg=dict(type='LN'),
+                    out_channels=256,
+                    type='DynamicConv'),
+                feedforward_channels=2048,
+                ffn_act_cfg=dict(inplace=True, type='ReLU'),
+                in_channels=256,
+                loss_bbox=dict(loss_weight=5.0, type='L1Loss'),
+                loss_cls=dict(
+                    alpha=0.25,
+                    gamma=2.0,
+                    loss_weight=2.0,
+                    type='FocalLoss',
+                    use_sigmoid=True),
+                loss_iou=dict(loss_weight=2.0, type='GIoULoss'),
+                num_classes=20,
+                num_cls_fcs=1,
+                num_ffn_fcs=2,
+                num_heads=8,
+                num_reg_fcs=3,
+                type='DIIHead'),
+            dict(
+                bbox_coder=dict(
+                    clip_border=False,
+                    target_means=[
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0,
+                    ],
+                    target_stds=[
+                        0.5,
+                        0.5,
+                        1.0,
+                        1.0,
+                    ],
+                    type='DeltaXYWHBBoxCoder'),
+                dropout=0.0,
+                dynamic_conv_cfg=dict(
+                    act_cfg=dict(inplace=True, type='ReLU'),
+                    feat_channels=64,
+                    in_channels=256,
+                    input_feat_shape=7,
+                    norm_cfg=dict(type='LN'),
+                    out_channels=256,
+                    type='DynamicConv'),
+                feedforward_channels=2048,
+                ffn_act_cfg=dict(inplace=True, type='ReLU'),
+                in_channels=256,
+                loss_bbox=dict(loss_weight=5.0, type='L1Loss'),
+                loss_cls=dict(
+                    alpha=0.25,
+                    gamma=2.0,
+                    loss_weight=2.0,
+                    type='FocalLoss',
+                    use_sigmoid=True),
+                loss_iou=dict(loss_weight=2.0, type='GIoULoss'),
+                num_classes=20,
+                num_cls_fcs=1,
+                num_ffn_fcs=2,
+                num_heads=8,
+                num_reg_fcs=3,
+                type='DIIHead'),
+            dict(
+                bbox_coder=dict(
+                    clip_border=False,
+                    target_means=[
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0,
+                    ],
+                    target_stds=[
+                        0.5,
+                        0.5,
+                        1.0,
+                        1.0,
+                    ],
+                    type='DeltaXYWHBBoxCoder'),
+                dropout=0.0,
+                dynamic_conv_cfg=dict(
+                    act_cfg=dict(inplace=True, type='ReLU'),
+                    feat_channels=64,
+                    in_channels=256,
+                    input_feat_shape=7,
+                    norm_cfg=dict(type='LN'),
+                    out_channels=256,
+                    type='DynamicConv'),
+                feedforward_channels=2048,
+                ffn_act_cfg=dict(inplace=True, type='ReLU'),
+                in_channels=256,
+                loss_bbox=dict(loss_weight=5.0, type='L1Loss'),
+                loss_cls=dict(
+                    alpha=0.25,
+                    gamma=2.0,
+                    loss_weight=2.0,
+                    type='FocalLoss',
+                    use_sigmoid=True),
+                loss_iou=dict(loss_weight=2.0, type='GIoULoss'),
+                num_classes=20,
+                num_cls_fcs=1,
+                num_ffn_fcs=2,
+                num_heads=8,
+                num_reg_fcs=3,
+                type='DIIHead'),
+            dict(
+                bbox_coder=dict(
+                    clip_border=False,
+                    target_means=[
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0,
+                    ],
+                    target_stds=[
+                        0.5,
+                        0.5,
+                        1.0,
+                        1.0,
+                    ],
+                    type='DeltaXYWHBBoxCoder'),
+                dropout=0.0,
+                dynamic_conv_cfg=dict(
+                    act_cfg=dict(inplace=True, type='ReLU'),
+                    feat_channels=64,
+                    in_channels=256,
+                    input_feat_shape=7,
+                    norm_cfg=dict(type='LN'),
+                    out_channels=256,
+                    type='DynamicConv'),
+                feedforward_channels=2048,
+                ffn_act_cfg=dict(inplace=True, type='ReLU'),
+                in_channels=256,
+                loss_bbox=dict(loss_weight=5.0, type='L1Loss'),
+                loss_cls=dict(
+                    alpha=0.25,
+                    gamma=2.0,
+                    loss_weight=2.0,
+                    type='FocalLoss',
+                    use_sigmoid=True),
+                loss_iou=dict(loss_weight=2.0, type='GIoULoss'),
+                num_classes=20,
+                num_cls_fcs=1,
+                num_ffn_fcs=2,
+                num_heads=8,
+                num_reg_fcs=3,
+                type='DIIHead'),
+            dict(
+                bbox_coder=dict(
+                    clip_border=False,
+                    target_means=[
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0,
+                    ],
+                    target_stds=[
+                        0.5,
+                        0.5,
+                        1.0,
+                        1.0,
+                    ],
+                    type='DeltaXYWHBBoxCoder'),
+                dropout=0.0,
+                dynamic_conv_cfg=dict(
+                    act_cfg=dict(inplace=True, type='ReLU'),
+                    feat_channels=64,
+                    in_channels=256,
+                    input_feat_shape=7,
+                    norm_cfg=dict(type='LN'),
+                    out_channels=256,
+                    type='DynamicConv'),
+                feedforward_channels=2048,
+                ffn_act_cfg=dict(inplace=True, type='ReLU'),
+                in_channels=256,
+                loss_bbox=dict(loss_weight=5.0, type='L1Loss'),
+                loss_cls=dict(
+                    alpha=0.25,
+                    gamma=2.0,
+                    loss_weight=2.0,
+                    type='FocalLoss',
+                    use_sigmoid=True),
+                loss_iou=dict(loss_weight=2.0, type='GIoULoss'),
+                num_classes=20,
+                num_cls_fcs=1,
+                num_ffn_fcs=2,
+                num_heads=8,
+                num_reg_fcs=3,
+                type='DIIHead'),
+        ],
+        bbox_roi_extractor=dict(
+            featmap_strides=[
+                4,
+                8,
+                16,
+                32,
+            ],
+            out_channels=256,
+            roi_layer=dict(output_size=7, sampling_ratio=2, type='RoIAlign'),
+            type='SingleRoIExtractor'),
+        num_stages=6,
+        proposal_feature_channel=256,
+        stage_loss_weights=[
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+        ],
+        type='SparseRoIHead'),
+    rpn_head=dict(
+        num_proposals=100,
+        proposal_feature_channel=256,
+        type='EmbeddingRPNHead'),
+    test_cfg=dict(rcnn=dict(max_per_img=100), rpn=None),
+    train_cfg=dict(
+        rcnn=[
+            dict(
+                assigner=dict(
+                    match_costs=[
+                        dict(type='FocalLossCost', weight=2.0),
+                        dict(box_format='xyxy', type='BBoxL1Cost', weight=5.0),
+                        dict(iou_mode='giou', type='IoUCost', weight=2.0),
+                    ],
+                    type='HungarianAssigner'),
+                pos_weight=1,
+                sampler=dict(type='PseudoSampler')),
+            dict(
+                assigner=dict(
+                    match_costs=[
+                        dict(type='FocalLossCost', weight=2.0),
+                        dict(box_format='xyxy', type='BBoxL1Cost', weight=5.0),
+                        dict(iou_mode='giou', type='IoUCost', weight=2.0),
+                    ],
+                    type='HungarianAssigner'),
+                pos_weight=1,
+                sampler=dict(type='PseudoSampler')),
+            dict(
+                assigner=dict(
+                    match_costs=[
+                        dict(type='FocalLossCost', weight=2.0),
+                        dict(box_format='xyxy', type='BBoxL1Cost', weight=5.0),
+                        dict(iou_mode='giou', type='IoUCost', weight=2.0),
+                    ],
+                    type='HungarianAssigner'),
+                pos_weight=1,
+                sampler=dict(type='PseudoSampler')),
+            dict(
+                assigner=dict(
+                    match_costs=[
+                        dict(type='FocalLossCost', weight=2.0),
+                        dict(box_format='xyxy', type='BBoxL1Cost', weight=5.0),
+                        dict(iou_mode='giou', type='IoUCost', weight=2.0),
+                    ],
+                    type='HungarianAssigner'),
+                pos_weight=1,
+                sampler=dict(type='PseudoSampler')),
+            dict(
+                assigner=dict(
+                    match_costs=[
+                        dict(type='FocalLossCost', weight=2.0),
+                        dict(box_format='xyxy', type='BBoxL1Cost', weight=5.0),
+                        dict(iou_mode='giou', type='IoUCost', weight=2.0),
+                    ],
+                    type='HungarianAssigner'),
+                pos_weight=1,
+                sampler=dict(type='PseudoSampler')),
+            dict(
+                assigner=dict(
+                    match_costs=[
+                        dict(type='FocalLossCost', weight=2.0),
+                        dict(box_format='xyxy', type='BBoxL1Cost', weight=5.0),
+                        dict(iou_mode='giou', type='IoUCost', weight=2.0),
+                    ],
+                    type='HungarianAssigner'),
+                pos_weight=1,
+                sampler=dict(type='PseudoSampler')),
+        ],
+        rpn=None),
+    type='SparseRCNN')
+num_proposals = 100
+num_stages = 6
+optim_wrapper = dict(
+    clip_grad=dict(max_norm=1, norm_type=2),
+    optimizer=dict(lr=2.5e-05, type='AdamW', weight_decay=0.0001),
+    type='OptimWrapper')
+param_scheduler = [
+    dict(
+        begin=0, by_epoch=False, end=500, start_factor=0.001, type='LinearLR'),
+    dict(
+        begin=0,
+        by_epoch=True,
+        end=12,
+        gamma=0.1,
+        milestones=[
+            8,
+            11,
+        ],
+        type='MultiStepLR'),
+]
+resume = False
+test_cfg = dict(type='TestLoop')
+test_dataloader = dict(
+    batch_size=1,
+    dataset=dict(
+        ann_file='VOC2007/ImageSets/Main/test.txt',
+        backend_args=None,
+        data_prefix=dict(sub_data_root='VOC2007/'),
+        data_root='data/VOCdevkit/',
+        pipeline=[
+            dict(backend_args=None, type='LoadImageFromFile'),
+            dict(keep_ratio=True, scale=(
+                500,
+                300,
+            ), type='Resize'),
+            dict(type='LoadAnnotations', with_bbox=True, with_mask=False),
+            dict(
+                meta_keys=(
+                    'img_id',
+                    'img_path',
+                    'ori_shape',
+                    'img_shape',
+                    'scale_factor',
+                ),
+                type='PackDetInputs'),
+        ],
+        test_mode=True,
+        type='VOCDataset'),
+    drop_last=False,
+    num_workers=2,
+    persistent_workers=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+test_evaluator = dict(eval_mode='11points', metric='mAP', type='VOCMetric')
+test_pipeline = [
+    dict(backend_args=None, type='LoadImageFromFile'),
+    dict(keep_ratio=True, scale=(
+        500,
+        300,
+    ), type='Resize'),
+    dict(type='LoadAnnotations', with_bbox=True, with_mask=False),
+    dict(
+        meta_keys=(
+            'img_id',
+            'img_path',
+            'ori_shape',
+            'img_shape',
+            'scale_factor',
+        ),
+        type='PackDetInputs'),
+]
+train_cfg = dict(max_epochs=6, type='EpochBasedTrainLoop', val_interval=1)
+train_dataloader = dict(
+    batch_sampler=dict(type='AspectRatioBatchSampler'),
+    batch_size=2,
+    dataset=dict(
+        dataset=dict(
+            datasets=[
+                dict(
+                    ann_file='VOC2007/ImageSets/Main/trainval.txt',
+                    backend_args=None,
+                    data_prefix=dict(sub_data_root='VOC2007/'),
+                    data_root='data/VOCdevkit/',
+                    filter_cfg=dict(
+                        bbox_min_size=32, filter_empty_gt=True, min_size=32),
+                    pipeline=[
+                        dict(backend_args=None, type='LoadImageFromFile'),
+                        dict(
+                            type='LoadAnnotations',
+                            with_bbox=True,
+                            with_mask=False),
+                        dict(
+                            keep_ratio=True, scale=(
+                                500,
+                                300,
+                            ), type='Resize'),
+                        dict(prob=0.5, type='RandomFlip'),
+                        dict(type='PackDetInputs'),
+                    ],
+                    type='VOCDataset'),
+                dict(
+                    ann_file='VOC2012/ImageSets/Main/trainval.txt',
+                    backend_args=None,
+                    data_prefix=dict(sub_data_root='VOC2012/'),
+                    data_root='data/VOCdevkit/',
+                    filter_cfg=dict(
+                        bbox_min_size=32, filter_empty_gt=True, min_size=32),
+                    pipeline=[
+                        dict(backend_args=None, type='LoadImageFromFile'),
+                        dict(
+                            type='LoadAnnotations',
+                            with_bbox=True,
+                            with_mask=False),
+                        dict(
+                            keep_ratio=True, scale=(
+                                500,
+                                300,
+                            ), type='Resize'),
+                        dict(prob=0.5, type='RandomFlip'),
+                        dict(type='PackDetInputs'),
+                    ],
+                    type='VOCDataset'),
+            ],
+            ignore_keys=[
+                'dataset_type',
+            ],
+            type='ConcatDataset'),
+        times=1,
+        type='RepeatDataset'),
+    num_workers=2,
+    persistent_workers=True,
+    sampler=dict(shuffle=True, type='DefaultSampler'))
+train_pipeline = [
+    dict(backend_args=None, type='LoadImageFromFile'),
+    dict(type='LoadAnnotations', with_bbox=True, with_mask=False),
+    dict(keep_ratio=True, scale=(
+        500,
+        300,
+    ), type='Resize'),
+    dict(prob=0.5, type='RandomFlip'),
+    dict(type='PackDetInputs'),
+]
+val_cfg = dict(type='ValLoop')
+val_dataloader = dict(
+    batch_size=1,
+    dataset=dict(
+        ann_file='VOC2007/ImageSets/Main/test.txt',
+        backend_args=None,
+        data_prefix=dict(sub_data_root='VOC2007/'),
+        data_root='data/VOCdevkit/',
+        pipeline=[
+            dict(backend_args=None, type='LoadImageFromFile'),
+            dict(keep_ratio=True, scale=(
+                500,
+                300,
+            ), type='Resize'),
+            dict(type='LoadAnnotations', with_bbox=True, with_mask=False),
+            dict(
+                meta_keys=(
+                    'img_id',
+                    'img_path',
+                    'ori_shape',
+                    'img_shape',
+                    'scale_factor',
+                ),
+                type='PackDetInputs'),
+        ],
+        test_mode=True,
+        type='VOCDataset'),
+    drop_last=False,
+    num_workers=2,
+    persistent_workers=True,
+    sampler=dict(shuffle=False, type='DefaultSampler'))
+val_evaluator = dict(eval_mode='11points', metric='mAP', type='VOCMetric')
+vis_backends = [
+    dict(type='LocalVisBackend'),
+]
+visualizer = dict(
+    name='visualizer',
+    type='DetLocalVisualizer',
+    vis_backends=[
+        dict(type='LocalVisBackend'),
+    ])
+work_dir = 'work_dirs/sparse-rcnn-cuda/results'
+
+2025/05/19 18:49:06 - mmengine - INFO - Distributed training is not used, all SyncBatchNorm (SyncBN) layers in the model will be automatically reverted to BatchNormXd layers if they are used.
+2025/05/19 18:49:06 - mmengine - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+before_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DistSamplerSeedHook                
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) IterTimerHook                      
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_val_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_val_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DetVisualizationHook               
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_val_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_test_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_test_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_test_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DetVisualizationHook               
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_run:
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+2025/05/19 18:49:12 - mmengine - INFO - Load checkpoint from work_dirs/sparse-rcnn-cuda/epoch_6.pth
+2025/05/19 18:49:59 - mmengine - INFO - Epoch(test) [  50/4952]    eta: 1:16:49  time: 0.9404  data_time: 0.1537  
+2025/05/19 18:50:39 - mmengine - INFO - Epoch(test) [ 100/4952]    eta: 1:10:13  time: 0.7964  data_time: 0.0010  
+2025/05/19 18:51:18 - mmengine - INFO - Epoch(test) [ 150/4952]    eta: 1:07:03  time: 0.7769  data_time: 0.0009  
+2025/05/19 18:52:05 - mmengine - INFO - Epoch(test) [ 200/4952]    eta: 1:08:19  time: 0.9369  data_time: 0.0013  
+2025/05/19 18:52:50 - mmengine - INFO - Epoch(test) [ 250/4952]    eta: 1:08:08  time: 0.8972  data_time: 0.0013  
+2025/05/19 18:53:28 - mmengine - INFO - Epoch(test) [ 300/4952]    eta: 1:06:02  time: 0.7628  data_time: 0.0009  
+2025/05/19 18:54:07 - mmengine - INFO - Epoch(test) [ 350/4952]    eta: 1:04:40  time: 0.7913  data_time: 0.0010  
+2025/05/19 18:54:52 - mmengine - INFO - Epoch(test) [ 400/4952]    eta: 1:04:28  time: 0.8971  data_time: 0.0012  
+2025/05/19 18:55:38 - mmengine - INFO - Epoch(test) [ 450/4952]    eta: 1:04:16  time: 0.9105  data_time: 0.0013  
+2025/05/19 18:56:20 - mmengine - INFO - Epoch(test) [ 500/4952]    eta: 1:03:28  time: 0.8440  data_time: 0.0008  
+2025/05/19 18:57:01 - mmengine - INFO - Epoch(test) [ 550/4952]    eta: 1:02:30  time: 0.8190  data_time: 0.0010  
+2025/05/19 18:57:41 - mmengine - INFO - Epoch(test) [ 600/4952]    eta: 1:01:32  time: 0.8077  data_time: 0.0010  
+2025/05/19 18:58:26 - mmengine - INFO - Epoch(test) [ 650/4952]    eta: 1:01:03  time: 0.8908  data_time: 0.0010  
+2025/05/19 18:59:11 - mmengine - INFO - Epoch(test) [ 700/4952]    eta: 1:00:38  time: 0.9083  data_time: 0.0012  
+2025/05/19 18:59:56 - mmengine - INFO - Epoch(test) [ 750/4952]    eta: 1:00:04  time: 0.8872  data_time: 0.0011  
+2025/05/19 19:00:41 - mmengine - INFO - Epoch(test) [ 800/4952]    eta: 0:59:32  time: 0.9001  data_time: 0.0011  
+2025/05/19 19:01:20 - mmengine - INFO - Epoch(test) [ 850/4952]    eta: 0:58:31  time: 0.7849  data_time: 0.0011  
+2025/05/19 19:02:02 - mmengine - INFO - Epoch(test) [ 900/4952]    eta: 0:57:44  time: 0.8383  data_time: 0.0012  
+2025/05/19 19:02:45 - mmengine - INFO - Epoch(test) [ 950/4952]    eta: 0:57:02  time: 0.8580  data_time: 0.0009  
+2025/05/19 19:03:29 - mmengine - INFO - Epoch(test) [1000/4952]    eta: 0:56:25  time: 0.8850  data_time: 0.0009  
+2025/05/19 19:04:17 - mmengine - INFO - Epoch(test) [1050/4952]    eta: 0:56:02  time: 0.9646  data_time: 0.0013  
+2025/05/19 19:05:04 - mmengine - INFO - Epoch(test) [1100/4952]    eta: 0:55:33  time: 0.9426  data_time: 0.0010  
+2025/05/19 19:05:55 - mmengine - INFO - Epoch(test) [1150/4952]    eta: 0:55:16  time: 1.0217  data_time: 0.0012  
+2025/05/19 19:06:46 - mmengine - INFO - Epoch(test) [1200/4952]    eta: 0:54:56  time: 1.0225  data_time: 0.0013  
+2025/05/19 19:07:26 - mmengine - INFO - Epoch(test) [1250/4952]    eta: 0:54:00  time: 0.7973  data_time: 0.0010  
+2025/05/19 19:08:15 - mmengine - INFO - Epoch(test) [1300/4952]    eta: 0:53:30  time: 0.9785  data_time: 0.0013  
+2025/05/19 19:09:06 - mmengine - INFO - Epoch(test) [1350/4952]    eta: 0:53:04  time: 1.0119  data_time: 0.0013  
+2025/05/19 19:09:56 - mmengine - INFO - Epoch(test) [1400/4952]    eta: 0:52:35  time: 1.0002  data_time: 0.0011  
+2025/05/19 19:10:45 - mmengine - INFO - Epoch(test) [1450/4952]    eta: 0:52:01  time: 0.9754  data_time: 0.0013  
+2025/05/19 19:11:29 - mmengine - INFO - Epoch(test) [1500/4952]    eta: 0:51:17  time: 0.8958  data_time: 0.0012  
+2025/05/19 19:12:11 - mmengine - INFO - Epoch(test) [1550/4952]    eta: 0:50:25  time: 0.8226  data_time: 0.0011  
+2025/05/19 19:12:51 - mmengine - INFO - Epoch(test) [1600/4952]    eta: 0:49:32  time: 0.8065  data_time: 0.0011  
+2025/05/19 19:13:30 - mmengine - INFO - Epoch(test) [1650/4952]    eta: 0:48:36  time: 0.7788  data_time: 0.0010  
+2025/05/19 19:14:07 - mmengine - INFO - Epoch(test) [1700/4952]    eta: 0:47:40  time: 0.7513  data_time: 0.0010  
+2025/05/19 19:14:44 - mmengine - INFO - Epoch(test) [1750/4952]    eta: 0:46:43  time: 0.7374  data_time: 0.0010  
+2025/05/19 19:15:31 - mmengine - INFO - Epoch(test) [1800/4952]    eta: 0:46:04  time: 0.9347  data_time: 0.0011  
+2025/05/19 19:16:12 - mmengine - INFO - Epoch(test) [1850/4952]    eta: 0:45:16  time: 0.8267  data_time: 0.0011  
+2025/05/19 19:16:48 - mmengine - INFO - Epoch(test) [1900/4952]    eta: 0:44:18  time: 0.7050  data_time: 0.0011  
+2025/05/19 19:17:25 - mmengine - INFO - Epoch(test) [1950/4952]    eta: 0:43:26  time: 0.7574  data_time: 0.0010  
+2025/05/19 19:18:05 - mmengine - INFO - Epoch(test) [2000/4952]    eta: 0:42:37  time: 0.7859  data_time: 0.0010  
+2025/05/19 19:18:43 - mmengine - INFO - Epoch(test) [2050/4952]    eta: 0:41:47  time: 0.7731  data_time: 0.0013  
+2025/05/19 19:19:22 - mmengine - INFO - Epoch(test) [2100/4952]    eta: 0:40:57  time: 0.7687  data_time: 0.0011  
+2025/05/19 19:20:05 - mmengine - INFO - Epoch(test) [2150/4952]    eta: 0:40:14  time: 0.8589  data_time: 0.0011  
+2025/05/19 19:20:43 - mmengine - INFO - Epoch(test) [2200/4952]    eta: 0:39:24  time: 0.7571  data_time: 0.0011  
+2025/05/19 19:21:23 - mmengine - INFO - Epoch(test) [2250/4952]    eta: 0:38:38  time: 0.8041  data_time: 0.0011  
+2025/05/19 19:22:00 - mmengine - INFO - Epoch(test) [2300/4952]    eta: 0:37:48  time: 0.7388  data_time: 0.0010  
+2025/05/19 19:22:41 - mmengine - INFO - Epoch(test) [2350/4952]    eta: 0:37:04  time: 0.8273  data_time: 0.0010  
+2025/05/19 19:23:20 - mmengine - INFO - Epoch(test) [2400/4952]    eta: 0:36:16  time: 0.7662  data_time: 0.0011  
+2025/05/19 19:23:56 - mmengine - INFO - Epoch(test) [2450/4952]    eta: 0:35:27  time: 0.7316  data_time: 0.0010  
+2025/05/19 19:24:37 - mmengine - INFO - Epoch(test) [2500/4952]    eta: 0:34:43  time: 0.8098  data_time: 0.0014  
+2025/05/19 19:25:18 - mmengine - INFO - Epoch(test) [2550/4952]    eta: 0:34:00  time: 0.8320  data_time: 0.0010  
+2025/05/19 19:26:00 - mmengine - INFO - Epoch(test) [2600/4952]    eta: 0:33:17  time: 0.8399  data_time: 0.0012  
+2025/05/19 19:26:40 - mmengine - INFO - Epoch(test) [2650/4952]    eta: 0:32:32  time: 0.8033  data_time: 0.0011  
+2025/05/19 19:27:19 - mmengine - INFO - Epoch(test) [2700/4952]    eta: 0:31:47  time: 0.7750  data_time: 0.0010  
+2025/05/19 19:27:59 - mmengine - INFO - Epoch(test) [2750/4952]    eta: 0:31:02  time: 0.7937  data_time: 0.0011  
+2025/05/19 19:28:38 - mmengine - INFO - Epoch(test) [2800/4952]    eta: 0:30:18  time: 0.7866  data_time: 0.0011  
+2025/05/19 19:29:16 - mmengine - INFO - Epoch(test) [2850/4952]    eta: 0:29:32  time: 0.7612  data_time: 0.0012  
+2025/05/19 19:29:53 - mmengine - INFO - Epoch(test) [2900/4952]    eta: 0:28:47  time: 0.7434  data_time: 0.0010  
+2025/05/19 19:30:30 - mmengine - INFO - Epoch(test) [2950/4952]    eta: 0:28:01  time: 0.7425  data_time: 0.0010  
+2025/05/19 19:31:11 - mmengine - INFO - Epoch(test) [3000/4952]    eta: 0:27:18  time: 0.8150  data_time: 0.0010  
+2025/05/19 19:31:49 - mmengine - INFO - Epoch(test) [3050/4952]    eta: 0:26:34  time: 0.7605  data_time: 0.0010  
+2025/05/19 19:32:30 - mmengine - INFO - Epoch(test) [3100/4952]    eta: 0:25:51  time: 0.8105  data_time: 0.0011  
+2025/05/19 19:33:08 - mmengine - INFO - Epoch(test) [3150/4952]    eta: 0:25:07  time: 0.7595  data_time: 0.0010  
+2025/05/19 19:33:47 - mmengine - INFO - Epoch(test) [3200/4952]    eta: 0:24:24  time: 0.7833  data_time: 0.0011  
+2025/05/19 19:34:28 - mmengine - INFO - Epoch(test) [3250/4952]    eta: 0:23:42  time: 0.8197  data_time: 0.0010  
+2025/05/19 19:35:07 - mmengine - INFO - Epoch(test) [3300/4952]    eta: 0:22:58  time: 0.7773  data_time: 0.0010  
+2025/05/19 19:35:44 - mmengine - INFO - Epoch(test) [3350/4952]    eta: 0:22:15  time: 0.7481  data_time: 0.0010  
+2025/05/19 19:36:26 - mmengine - INFO - Epoch(test) [3400/4952]    eta: 0:21:33  time: 0.8358  data_time: 0.0010  
+2025/05/19 19:37:06 - mmengine - INFO - Epoch(test) [3450/4952]    eta: 0:20:51  time: 0.8021  data_time: 0.0011  
+2025/05/19 19:37:43 - mmengine - INFO - Epoch(test) [3500/4952]    eta: 0:20:07  time: 0.7287  data_time: 0.0009  
+2025/05/19 19:38:20 - mmengine - INFO - Epoch(test) [3550/4952]    eta: 0:19:24  time: 0.7497  data_time: 0.0009  
+2025/05/19 19:38:56 - mmengine - INFO - Epoch(test) [3600/4952]    eta: 0:18:40  time: 0.7167  data_time: 0.0009  
+2025/05/19 19:39:30 - mmengine - INFO - Epoch(test) [3650/4952]    eta: 0:17:56  time: 0.6786  data_time: 0.0010  
+2025/05/19 19:40:06 - mmengine - INFO - Epoch(test) [3700/4952]    eta: 0:17:13  time: 0.7157  data_time: 0.0009  
+2025/05/19 19:40:40 - mmengine - INFO - Epoch(test) [3750/4952]    eta: 0:16:29  time: 0.6820  data_time: 0.0010  
+2025/05/19 19:41:18 - mmengine - INFO - Epoch(test) [3800/4952]    eta: 0:15:47  time: 0.7720  data_time: 0.0010  
+2025/05/19 19:42:27 - mmengine - INFO - Epoch(test) [3850/4952]    eta: 0:15:14  time: 1.3754  data_time: 0.0018  
+2025/05/19 19:43:58 - mmengine - INFO - Epoch(test) [3900/4952]    eta: 0:14:46  time: 1.8100  data_time: 0.0022  
+2025/05/19 19:45:30 - mmengine - INFO - Epoch(test) [3950/4952]    eta: 0:14:16  time: 1.8422  data_time: 0.0022  
+2025/05/19 19:46:58 - mmengine - INFO - Epoch(test) [4000/4952]    eta: 0:13:44  time: 1.7637  data_time: 0.0020  
+2025/05/19 19:48:25 - mmengine - INFO - Epoch(test) [4050/4952]    eta: 0:13:11  time: 1.7482  data_time: 0.0021  
+2025/05/19 19:49:51 - mmengine - INFO - Epoch(test) [4100/4952]    eta: 0:12:36  time: 1.7048  data_time: 0.0020  
+2025/05/19 19:51:20 - mmengine - INFO - Epoch(test) [4150/4952]    eta: 0:12:00  time: 1.7967  data_time: 0.0021  
+2025/05/19 19:52:49 - mmengine - INFO - Epoch(test) [4200/4952]    eta: 0:11:23  time: 1.7759  data_time: 0.0020  
+2025/05/19 19:54:14 - mmengine - INFO - Epoch(test) [4250/4952]    eta: 0:10:44  time: 1.6957  data_time: 0.0018  
+2025/05/19 19:55:44 - mmengine - INFO - Epoch(test) [4300/4952]    eta: 0:10:05  time: 1.7971  data_time: 0.0021  
+2025/05/19 19:57:09 - mmengine - INFO - Epoch(test) [4350/4952]    eta: 0:09:24  time: 1.7068  data_time: 0.0021  
+2025/05/19 19:58:34 - mmengine - INFO - Epoch(test) [4400/4952]    eta: 0:08:42  time: 1.6901  data_time: 0.0020  
+2025/05/19 19:59:55 - mmengine - INFO - Epoch(test) [4450/4952]    eta: 0:07:58  time: 1.6187  data_time: 0.0018  
+2025/05/19 20:01:15 - mmengine - INFO - Epoch(test) [4500/4952]    eta: 0:07:14  time: 1.6067  data_time: 0.0019  
+2025/05/19 20:02:38 - mmengine - INFO - Epoch(test) [4550/4952]    eta: 0:06:29  time: 1.6529  data_time: 0.0022  
+2025/05/19 20:04:00 - mmengine - INFO - Epoch(test) [4600/4952]    eta: 0:05:43  time: 1.6387  data_time: 0.0021  
+2025/05/19 20:05:27 - mmengine - INFO - Epoch(test) [4650/4952]    eta: 0:04:57  time: 1.7433  data_time: 0.0022  
+2025/05/19 20:06:51 - mmengine - INFO - Epoch(test) [4700/4952]    eta: 0:04:09  time: 1.6912  data_time: 0.0020  
+2025/05/19 20:08:23 - mmengine - INFO - Epoch(test) [4750/4952]    eta: 0:03:22  time: 1.8351  data_time: 0.0023  
+2025/05/19 20:09:54 - mmengine - INFO - Epoch(test) [4800/4952]    eta: 0:02:33  time: 1.8220  data_time: 0.0021  
+2025/05/19 20:11:23 - mmengine - INFO - Epoch(test) [4850/4952]    eta: 0:01:43  time: 1.7787  data_time: 0.0022  
+2025/05/19 20:12:52 - mmengine - INFO - Epoch(test) [4900/4952]    eta: 0:00:53  time: 1.7830  data_time: 0.0022  
+2025/05/19 20:14:20 - mmengine - INFO - Epoch(test) [4950/4952]    eta: 0:00:02  time: 1.7540  data_time: 0.0021  
+2025/05/19 20:14:24 - mmengine - INFO - 
+---------------iou_thr: 0.5---------------
+2025/05/19 20:14:45 - mmengine - INFO - 
++-------------+------+-------+--------+-------+
+| class       | gts  | dets  | recall | ap    |
++-------------+------+-------+--------+-------+
+| aeroplane   | 285  | 20829 | 0.849  | 0.691 |
+| bicycle     | 337  | 11308 | 0.953  | 0.711 |
+| bird        | 459  | 13969 | 0.832  | 0.636 |
+| boat        | 263  | 21808 | 0.882  | 0.547 |
+| bottle      | 469  | 13079 | 0.603  | 0.340 |
+| bus         | 213  | 20832 | 0.939  | 0.720 |
+| car         | 1201 | 47066 | 0.892  | 0.698 |
+| cat         | 358  | 19793 | 0.992  | 0.840 |
+| chair       | 756  | 57570 | 0.862  | 0.400 |
+| cow         | 244  | 24428 | 0.943  | 0.606 |
+| diningtable | 206  | 14214 | 0.898  | 0.666 |
+| dog         | 489  | 31391 | 0.988  | 0.804 |
+| horse       | 348  | 15882 | 0.968  | 0.778 |
+| motorbike   | 325  | 13898 | 0.932  | 0.707 |
+| person      | 4528 | 89297 | 0.861  | 0.626 |
+| pottedplant | 480  | 26457 | 0.756  | 0.353 |
+| sheep       | 242  | 12941 | 0.872  | 0.565 |
+| sofa        | 239  | 13606 | 0.958  | 0.698 |
+| train       | 282  | 15853 | 0.957  | 0.775 |
+| tvmonitor   | 308  | 10979 | 0.880  | 0.634 |
++-------------+------+-------+--------+-------+
+| mAP         |      |       |        | 0.640 |
++-------------+------+-------+--------+-------+
+2025/05/19 20:14:45 - mmengine - INFO - Epoch(test) [4952/4952]    pascal_voc/mAP: 0.6397  pascal_voc/AP50: 0.6400  data_time: 0.0028  time: 1.0321
