@@ -77,7 +77,6 @@ Sparse R-CNN模型已经训练好并存放到work_dirs\sparse-rcnn-cuda\epoch_6.
 python tools/test.py configs\sparse-rcnn_voc.py work_dirs\sparse-rcnn-cuda\epoch_6.pth --show-dir work_dirs
 ```
 #### 5.  训练过程可视化
-
 启动TensorBoard：
 ```
 # 查看Mask R-CNN训练日志
@@ -87,20 +86,16 @@ tensorboard --logdir=work_dirs\mask-rcnn-cuda
 tensorboard --logdir=work_dirs\sparse-rcnn-cuda
 ```
 
-
+#### 6.  可视化图像结果
+用训练好的Mask R-CNN模型在单张图像data/image1.jpg上可视化检测结果：
+```
+python demo/image_demo.py data/image1.jpg configs/mask-rcnn_voc.py --weights work_dirs/mask-rcnn-cuda/epoch_6.pth --show --out results
 ```
 
+用训练好的Sparse R-CNN模型在单张图像data/image1.jpg上可视化检测结果：
+```
+python demo/image_demo.py data/image1.jpg configs/sparse-rcnn_voc.py --weights work_dirs/sparse-rcnn-cuda/epoch_6.pth --show --out results
 ```
 
-
-```
-
-```
-```
-
-```
-
-```
-
-```
 ### 五、模型权重下载
+模型储存在我的网盘： https://pan.baidu.com/s/1OohqwpF74IXSkdD7Dul2hw?pwd=5s41 提取码: 5s41
