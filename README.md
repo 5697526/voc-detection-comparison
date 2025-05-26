@@ -28,7 +28,7 @@ voc-detection-comparison/mmdetection/
 ```
 
 
-### 四、训练和测试步骤
+### 四、实验步骤
 #### 1. 安装依赖
 ```
 conda create -n mmdet python=3.8 -y
@@ -60,26 +60,42 @@ tar -xvf VOCtest_06-Nov-2007.tar
 #### 3.  训练模型
 使用以下命令训练 Mask R-CNN 模型：
 ```
-python tools/train.py \
-  configs/mask-rcnn_voc.py \
-  --work-dir work_dirs/mask-rcnn-cuda \
-  --cfg-options device='cuda' 
+python tools/train.py  configs/mask-rcnn_voc.py  --work-dir work_dirs/mask-rcnn-cuda  --cfg-options device='cuda' 
 ```
 使用以下命令训练 Sparse R-CNN 模型：
 ```
-python tools/train.py \
-  configs/sparse-rcnn_voc.py \
-  --work-dir work_dirs/sparse-rcnn-cuda \
-  --cfg-options device='cuda'
+python tools/train.py  configs/sparse-rcnn_voc.py  --work-dir work_dirs/sparse-rcnn-cuda  --cfg-options device='cuda'
+```
+#### 4.  测试模型
+Mask R-CNN模型已经训练好并存放到work_dirs\mask-rcnn-cuda\epoch_6.pth，使用以下命令测试 Mask R-CNN 模型，并保存测试结果的可视化图像：
+```
+python tools/test.py configs\mask-rcnn_voc.py work_dirs\mask-rcnn-cuda\epoch_6.pth --show-dir work_dirs
+```
+Sparse R-CNN模型已经训练好并存放到work_dirs\sparse-rcnn-cuda\epoch_6.pth，使用以下命令测试 Sparse R-CNN 模型，并保存测试结果的可视化图像：
+
+```
+python tools/test.py configs\sparse-rcnn_voc.py work_dirs\sparse-rcnn-cuda\epoch_6.pth --show-dir work_dirs
+```
+#### 5.  训练过程可视化
+
+启动TensorBoard：
+```
+# 查看Mask R-CNN训练日志
+tensorboard --logdir=work_dirs\mask-rcnn-cuda
+
+# 查看Sparse R-CNN训练日志
+tensorboard --logdir=work_dirs\sparse-rcnn-cuda
 ```
 
 
-
 ```
 
 ```
 
 
+```
+
+```
 ```
 
 ```
