@@ -9,7 +9,7 @@ PASCAL VOC 是计算机视觉领域最经典的目标检测和图像分割基准
 
 ### 三、文件结构
 
-`
+```
 voc-detection-comparison/mmdetection/
 ├── configs/    #存放模型训练和测试的配置文件
 │   ├── mask-rcnn_voc.py
@@ -25,12 +25,12 @@ voc-detection-comparison/mmdetection/
 │   ├── test.py
 │   └── train.py
 └── work_dirs/  #训练过程中的模型权重、日志等文件会保存在此
-`
+```
 
 
 ### 四、训练和测试步骤
 #### 1. 安装依赖
-`
+```
 conda create -n mmdet python=3.8 -y
 conda activate mmdet
 pip install torch torchvision torchaudio
@@ -38,15 +38,15 @@ pip install -U openmim
 mim install "mmcv<2.2.0" 
 cd mmdetection
 pip install -v -e .
-`
+```
 
 #### 2.  数据集准备
 
-`
+```
 wget http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar
 wget http://host.robots.ox.ac.uk/pascal/VOC/voc2007/VOCtrainval_06-Nov-2007.tar
 wget http://host.robots.ox.ac.uk/pascal/VOC/voc2007/VOCtest_06-Nov-2007.tar
-`
+```
 
 #### 3.  训练模型
 `
