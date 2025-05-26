@@ -106,3 +106,10 @@ optim_wrapper = dict(
 
 # 训练设置
 train_cfg = dict(max_epochs=6, val_interval=1)
+log_config = dict(
+    interval=50,
+    hooks=[
+        dict(type='TextLoggerHook'),
+        dict(type='TensorboardLoggerHook'),  # 这将保存日志到TensorBoard
+    ]
+)

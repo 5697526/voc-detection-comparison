@@ -5,22 +5,21 @@ _base_ = [
     './_base_/default_runtime.py'
 ]
 
-# 模型配置 - 完全移除mask分支
 model = dict(
     roi_head=dict(
         bbox_head=dict(num_classes=20),  # VOC有20个类别
-        mask_head=None,  # 完全禁用mask分支
-        mask_roi_extractor=None  # 同时禁用mask的ROI提取器
+        mask_head=None,
+        mask_roi_extractor=None
     ),
     # 测试配置也移除mask相关设置
     test_cfg=dict(
         rcnn=dict(
-            with_mask=False  # 确保测试时不生成mask预测
+            with_mask=False
         )
     )
 )
 
-# 数据集设置（确保不加载mask标注）
+
 data = dict(
     train=dict(
         dataset=dict(
@@ -74,10 +73,16 @@ data = dict(
 
 optimizer = dict(type='SGD', lr=0.02, momentum=0.9, weight_decay=0.0001)
 
-# 评估器设置（标准VOC评估，不涉及mask）
 val_evaluator = dict(type='VOCMetric', metric='mAP', eval_mode='11points')
 test_evaluator = val_evaluator
 
 
 # 训练设置
 train_cfg = dict(max_epochs=6, val_interval=1)
+log_config = dict(
+    interval=50,
+    hooks=[
+        dict(type='TextLoggerHook'),
+        dict(type='TensorboardLoggerHook'),
+    ]
+)
